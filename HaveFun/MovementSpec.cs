@@ -147,7 +147,9 @@ namespace HaveFun
 
             if (_playerOneScore < 2)
             {
-                return new PlayerOneMoved(cmd.X, cmd.Y);
+                var playerOneMoved = new PlayerOneMoved(cmd.X, cmd.Y);
+                _unstoredEvents.Add(playerOneMoved);
+                return playerOneMoved;
             }
             
             var playerOneWins = new PlayerOneWins();
@@ -207,6 +209,8 @@ namespace HaveFun
             {
                 Apply((dynamic)unstoredEvent);
             }
+            
+            _unstoredEvents.Clear();
         }
 
         public void Apply(GameStarted e)
