@@ -29,21 +29,7 @@ namespace HaveFun
             var result = game.Handle(new MovePlayerOne(0,2));
             Assert.Equal(typeof(PlayerOneWins), result.GetType());
         }
-        
-        [Fact]
-        public void PLayerTwoWins()
-        {
-            var game = new Game();
-            game.Handle(new StartGame());
-            game.ApplyEvents();
-            game.Handle(new MovePlayerTwo(0,0));
-            game.ApplyEvents();
-            game.Handle(new MovePlayerTwo(0,1));
-            game.ApplyEvents();
-           
-            var result = game.Handle(new MovePlayerTwo(0,2));
-            Assert.Equal(typeof(PlayerTwoMoved), result.GetType());
-        }
+
 
         [Fact]
         public void PlayerOneDoesNotWin()
@@ -55,16 +41,7 @@ namespace HaveFun
             Assert.Equal(typeof(PlayerOneMoved), result.GetType());
         }
         
-        [Fact]
-        public void PlayerTwoDoesNotWin()
-        {
-            var game = new Game();
-            game.Handle(new StartGame());
-            game.ApplyEvents();
-            var result = game.Handle(new MovePlayerTwo(0,2));
-            Assert.Equal(typeof(PlayerTwoMoved), result.GetType());
-        }
-
+ 
         [Fact]
         public void Test3()
         {
@@ -158,26 +135,7 @@ namespace HaveFun
             _unstoredEvents.Add(playerOneWins);
             return playerOneWins;
         }
-        
-        public Event Handle(MovePlayerTwo cmd)
-        {
-            if(!_gameStarted) throw new InvalidOperationException();
-
-            if (IsTouching(cmd.X, cmd.Y, 2))
-            {
-                _playerOneScore = _playerOneScore++;
-            }
-
-            if (_playerOneScore < 2)
-            {
-                return new PlayerTwoMoved(cmd.X, cmd.Y);
-            }
-            
-            var playerOneWins = new PlayerTwoWins();
-            _unstoredEvents.Add(playerOneWins);
-            return playerOneWins;
-        }
-
+  
      
 
         private bool IsTouching(in int x, in int y, int player)
@@ -230,14 +188,6 @@ namespace HaveFun
             
         }
 
-        public void Apply(PlayerTwoMoved e)
-        {
-            if (IsTouching(e.X, e.Y, 2))
-            {
-                _playerTwoScore = _playerTwoScore + 1;
-            }
-            _board[e.X, e.Y] = 2;
-        }
 
      
     }
