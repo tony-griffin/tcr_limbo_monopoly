@@ -15,18 +15,20 @@ namespace HaveFun
             Assert.Equal(typeof(GameStarted), result.GetType());
         }
         
-        // [Fact]
-        // public void PLayerOneWins()
-        // {
-        //     var game = new Game();
-        //     game.Handle(new StartGame());
-        //     game.Handle(new MovePlayerOne(0,0));
-        //     game.Handle(new MovePlayerOne(0,1));
-        //     game.ApplyEvents();
-        //    
-        //     var result = game.Handle(new MovePlayerOne(0,2));
-        //     Assert.Equal(typeof(PlayerOneWins), result.GetType());
-        // }
+        [Fact]
+        public void PLayerOneWins()
+        {
+            var game = new Game();
+            game.Handle(new StartGame());
+            game.ApplyEvents();
+            game.Handle(new MovePlayerOne(0,0));
+            game.ApplyEvents();
+            game.Handle(new MovePlayerOne(0,1));
+            game.ApplyEvents();
+           
+            var result = game.Handle(new MovePlayerOne(0,2));
+            Assert.Equal(typeof(PlayerOneMoved), result.GetType());
+        }
 
         [Fact]
         public void PlayerOneDoesNotWin()
