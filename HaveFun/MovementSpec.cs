@@ -29,6 +29,21 @@ namespace HaveFun
             var result = game.Handle(new MovePlayerOne(0,2));
             Assert.Equal(typeof(PlayerOneMoved), result.GetType());
         }
+        
+        [Fact]
+        public void PLayerTwoWins()
+        {
+            var game = new Game();
+            game.Handle(new StartGame());
+            game.ApplyEvents();
+            game.Handle(new MovePlayerTwo(0,0));
+            game.ApplyEvents();
+            game.Handle(new MovePlayerTwo(0,1));
+            game.ApplyEvents();
+           
+            var result = game.Handle(new MovePlayerTwo(0,2));
+            Assert.Equal(typeof(PlayerTwoMoved), result.GetType());
+        }
 
         [Fact]
         public void PlayerOneDoesNotWin()
