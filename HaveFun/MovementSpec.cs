@@ -116,6 +116,26 @@ namespace HaveFun
 
         private bool IsTouching(in int x, in int y)
         {
+            var lowx = x - 1;
+            var lowy = y - 1;
+            var highx = x + 1;
+            var highY = y + 1;
+            
+            if (lowx < 0) lowx = 0;
+            if (lowy < 0) lowy = 0;
+            if (highx > 2) highx = 2;
+            if (highY > 2) highY = 2;
+
+            for (int i = lowx; i < highx; i++)
+            {
+                for (int j = lowy; j < highY; j++)
+                {
+                    if (i == x && j == y) continue;
+
+                    if (_board[i, j] == 1) return true;
+                }
+            }
+
             return false;
         }
 
