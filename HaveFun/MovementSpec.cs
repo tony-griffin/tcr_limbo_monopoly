@@ -27,7 +27,7 @@ namespace HaveFun
             game.ApplyEvents();
            
             var result = game.Handle(new MovePlayerOne(0,2));
-            Assert.Equal(typeof(PlayerOneMoved), result.GetType());
+            Assert.Equal(typeof(PlayerOneWins), result.GetType());
         }
         
         [Fact]
@@ -127,6 +127,7 @@ namespace HaveFun
         private bool _gameStarted = false;
         private int _playerOneScore = 0;
         private readonly int[,] _board = new int[3,3];
+        private int _playerTwoScore;
 
         public Event Handle(StartGame startGame)
         {
@@ -140,12 +141,13 @@ namespace HaveFun
         {
             if(!_gameStarted) throw new InvalidOperationException();
 
+            var newScore = _playerOneScore;
             if (IsTouching(cmd.X, cmd.Y, 1))
             {
-                _playerOneScore = _playerOneScore++;
+                newScore = newScore + 1;
             }
 
-            if (_playerOneScore < 2)
+            if (newScore < 2)
             {
                 var playerOneMoved = new PlayerOneMoved(cmd.X, cmd.Y);
                 _unstoredEvents.Add(playerOneMoved);
@@ -194,7 +196,7 @@ namespace HaveFun
             {
                 for (int j = lowy; j <= highY; j++)
                 {
-                    if (i == x && j == y) continue;
+                    if (i == x && j == y) continue; // the current move so skip
 
                     if (_board[i, j] == player) return true;
                 }
@@ -220,11 +222,20 @@ namespace HaveFun
 
         public void Apply(PlayerOneMoved e)
         {
+            if (IsTouching(e.X, e.Y, 1))
+            {
+                _playerOneScore = _playerOneScore + 1;
+            }
             _board[e.X, e.Y] = 1;
+            
         }
 
         public void Apply(PlayerTwoMoved e)
         {
+            if (IsTouching(e.X, e.Y, 2))
+            {
+                _playerTwoScore = _playerTwoScore + 1;
+            }
             _board[e.X, e.Y] = 2;
         }
 
