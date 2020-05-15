@@ -28,10 +28,12 @@ namespace HaveFun
         //     Assert.Equal(typeof(PlayerOneWins), result.GetType());
         // }
 
+        [Fact]
         public void PlayerOneDoesNotWin()
         {
             var game = new Game();
             game.Handle(new StartGame());
+            game.ApplyEvents();
             var result = game.Handle(new MovePlayerOne(0,2));
             Assert.Equal(typeof(PlayerOneMoved), result.GetType());
         }
@@ -83,7 +85,7 @@ namespace HaveFun
     public class Game
     {
         private readonly List<Event> _unstoredEvents = new List<Event>();
-        private bool _gameStarted;
+        private bool _gameStarted = false;
         private int _playerOneScore = 0;
         private readonly int[,] _board = new int[3,3];
 
