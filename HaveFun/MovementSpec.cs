@@ -41,6 +41,16 @@ namespace HaveFun
             Assert.Equal(typeof(PlayerOneMoved), result.GetType());
         }
         
+        [Fact]
+        public void PlayerTwoDoesNotWin()
+        {
+            var game = new Game();
+            game.Handle(new StartGame());
+            game.ApplyEvents();
+            var result = game.Handle(new MovePlayerTwo(0,2));
+            Assert.Equal(typeof(PlayerTwoMoved), result.GetType());
+        }
+        
  
         [Fact]
         public void Test3()
@@ -135,6 +145,11 @@ namespace HaveFun
             _unstoredEvents.Add(playerOneWins);
             return playerOneWins;
         }
+        
+        public Event Handle(MovePlayerTwo cmd)
+        {
+          return new PlayerTwoMoved(cmd.X, cmd.Y);
+        }
   
      
 
@@ -189,7 +204,7 @@ namespace HaveFun
         }
 
 
-     
+      
     }
     public class PlayerTwoWins : Event
     {
