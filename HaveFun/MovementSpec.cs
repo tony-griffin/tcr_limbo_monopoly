@@ -21,7 +21,9 @@ namespace HaveFun
             var game = new Game();
              game.Handle(new StartGame());
             game.ApplyEvents();
-            var result = game.Handle(new MovePlayerOne());
+           game.Handle(new MovePlayerOne(0,0));
+            game.Handle(new MovePlayerOne(0,1));
+            var result = game.Handle(new MovePlayerOne(0,2));
             Assert.Equal(typeof(PlayerOneWins), result.GetType());
         }
 
@@ -29,12 +31,20 @@ namespace HaveFun
         public void Test3()
         {
             var game = new Game();
-            Assert.Throws<InvalidOperationException>(() => game.Handle(new MovePlayerOne()));
+            Assert.Throws<InvalidOperationException>(() => game.Handle(new MovePlayerOne(0,0)));
         }
     }
 
     public class MovePlayerOne : Command
     {
+        public int X { get; }
+        public int Y { get; }
+
+        public MovePlayerOne(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 
     public class GameStarted : Event
