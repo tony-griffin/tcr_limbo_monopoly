@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace HaveFun
@@ -17,14 +19,17 @@ namespace HaveFun
         public void Test2()
         {
             var game = new Game();
+             game.Handle(new StartGame());
+            game.ApplyEvents();
             var result = game.Handle(new MovePlayerOne());
             Assert.Equal(typeof(PlayerOneWins), result.GetType());
         }
 
         [Fact]
-        public void asdf()
+        public void Test3()
         {
-            
+            var game = new Game();
+            Assert.Throws<InvalidOperationException>(() => game.Handle(new MovePlayerOne()));
         }
     }
 
@@ -38,14 +43,36 @@ namespace HaveFun
 
     public class Game
     {
+        private List<Event> _unstoredEvents = new List<Event>();
+        private bool _gameStarted;
+
         public Event Handle(StartGame startGame)
         {
-            return new GameStarted();
+            var gameStarted = new GameStarted();
+            _unstoredEvents.Add(gameStarted);
+            
+            return gameStarted;
         }
 
         public Event Handle(MovePlayerOne cmd)
         {
-            return new PlayerOneWins();
+            if(!_gameStarted) throw new InvalidOperationException();
+            var playerOneWins = new PlayerOneWins();
+            _unstoredEvents.Add(playerOneWins);
+            return playerOneWins;
+        }
+
+        public void ApplyEvents()
+        {
+            foreach (var unstoredEvent in _unstoredEvents)
+            {
+                Apply((dynamic)unstoredEvent);
+            }
+        }
+
+        public void Apply(GameStarted e)
+        {
+            _gameStarted = true;
         }
     }
 
