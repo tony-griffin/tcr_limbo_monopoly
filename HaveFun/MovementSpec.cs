@@ -204,6 +204,11 @@ namespace HaveFun
             _board[e.X, e.Y] = 1;
         }
 
+        public void Apply(PlayerTwoMoved e)
+        {
+            _board[e.X, e.Y] = 2;
+        }
+
      
     }
     public class PlayerTwoWins : Event
