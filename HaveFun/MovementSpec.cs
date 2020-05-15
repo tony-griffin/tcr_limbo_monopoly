@@ -39,12 +39,34 @@ namespace HaveFun
             var result = game.Handle(new MovePlayerOne(0,2));
             Assert.Equal(typeof(PlayerOneMoved), result.GetType());
         }
+        
+        [Fact]
+        public void PlayerTwoDoesNotWin()
+        {
+            var game = new Game();
+            game.Handle(new StartGame());
+            game.ApplyEvents();
+            var result = game.Handle(new MovePlayerTwo(0,2));
+            Assert.Equal(typeof(PlayerTwoMoved), result.GetType());
+        }
 
         [Fact]
         public void Test3()
         {
             var game = new Game();
             Assert.Throws<InvalidOperationException>(() => game.Handle(new MovePlayerOne(0,0)));
+        }
+    }
+
+    public class MovePlayerTwo : Command
+    {
+        public int X { get; }
+        public int Y { get; }
+
+        public MovePlayerTwo(int x, int y)
+        {
+            X = x;
+            Y = y;
         }
     }
 
@@ -103,7 +125,7 @@ namespace HaveFun
         {
             if(!_gameStarted) throw new InvalidOperationException();
 
-            if (IsTouching(cmd.X, cmd.Y))
+            if (IsTouching(cmd.X, cmd.Y, 1))
             {
                 _playerOneScore = _playerOneScore++;
             }
@@ -117,8 +139,29 @@ namespace HaveFun
             _unstoredEvents.Add(playerOneWins);
             return playerOneWins;
         }
+        
+        public Event Handle(MovePlayerTwo cmd)
+        {
+            if(!_gameStarted) throw new InvalidOperationException();
 
-        private bool IsTouching(in int x, in int y)
+            if (IsTouching(cmd.X, cmd.Y, 2))
+            {
+                _playerOneScore = _playerOneScore++;
+            }
+
+            if (_playerOneScore < 2)
+            {
+                return new PlayerTwoMoved(cmd.X, cmd.Y);
+            }
+            
+            var playerOneWins = new PlayerTwoWins();
+            _unstoredEvents.Add(playerOneWins);
+            return playerOneWins;
+        }
+
+     
+
+        private bool IsTouching(in int x, in int y, int player)
         {
             var lowx = x - 1;
             var lowy = y - 1;
@@ -136,7 +179,7 @@ namespace HaveFun
                 {
                     if (i == x && j == y) continue;
 
-                    if (_board[i, j] == 1) return true;
+                    if (_board[i, j] == player) return true;
                 }
             }
 
@@ -159,6 +202,22 @@ namespace HaveFun
         public void Apply(PlayerOneMoved e)
         {
             _board[e.X, e.Y] = 1;
+        }
+
+     
+    }
+    public class PlayerTwoWins : Event
+    {
+    }
+    public class PlayerTwoMoved : Event
+    {
+        public int X { get; }
+        public int Y { get; }
+
+        public PlayerTwoMoved(in int x, in int y)
+        {
+            X = x;
+            Y = y;
         }
     }
 
