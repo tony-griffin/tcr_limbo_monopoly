@@ -15,16 +15,25 @@ namespace HaveFun
             Assert.Equal(typeof(GameStarted), result.GetType());
         }
         
-        [Fact]
-        public void Test2()
+        // [Fact]
+        // public void PLayerOneWins()
+        // {
+        //     var game = new Game();
+        //     game.Handle(new StartGame());
+        //     game.Handle(new MovePlayerOne(0,0));
+        //     game.Handle(new MovePlayerOne(0,1));
+        //     game.ApplyEvents();
+        //    
+        //     var result = game.Handle(new MovePlayerOne(0,2));
+        //     Assert.Equal(typeof(PlayerOneWins), result.GetType());
+        // }
+
+        public void PlayerOneDoesNotWin()
         {
             var game = new Game();
-             game.Handle(new StartGame());
-            game.ApplyEvents();
-           game.Handle(new MovePlayerOne(0,0));
-            game.Handle(new MovePlayerOne(0,1));
+            game.Handle(new StartGame());
             var result = game.Handle(new MovePlayerOne(0,2));
-            Assert.Equal(typeof(PlayerOneWins), result.GetType());
+            Assert.Equal(typeof(PlayerOneMoved), result.GetType());
         }
 
         [Fact]
@@ -32,6 +41,18 @@ namespace HaveFun
         {
             var game = new Game();
             Assert.Throws<InvalidOperationException>(() => game.Handle(new MovePlayerOne(0,0)));
+        }
+    }
+
+    public class PlayerOneMoved : Event
+    {
+        public int X { get; }
+        public int Y { get; }
+
+        public PlayerOneMoved(int x, int y)
+        {
+            X = x;
+            Y = y;
         }
     }
 
@@ -46,6 +67,14 @@ namespace HaveFun
             Y = y;
         }
     }
+    
+    // command -> thing -> event
+    
+    // loading: List<Event> -> apply them all
+    // get all events for object
+    // apply them all -> current state
+    // handle command
+    // store new events
 
     public class GameStarted : Event
     {
@@ -53,8 +82,10 @@ namespace HaveFun
 
     public class Game
     {
-        private List<Event> _unstoredEvents = new List<Event>();
+        private readonly List<Event> _unstoredEvents = new List<Event>();
         private bool _gameStarted;
+        private int _playerOneScore = 0;
+        private readonly int[,] _board = new int[3,3];
 
         public Event Handle(StartGame startGame)
         {
@@ -67,9 +98,25 @@ namespace HaveFun
         public Event Handle(MovePlayerOne cmd)
         {
             if(!_gameStarted) throw new InvalidOperationException();
+
+            if (IsTouching(cmd.X, cmd.Y))
+            {
+                _playerOneScore = _playerOneScore++;
+            }
+
+            if (_playerOneScore < 3)
+            {
+                return new PlayerOneMoved(cmd.X, cmd.Y);
+            }
+            
             var playerOneWins = new PlayerOneWins();
             _unstoredEvents.Add(playerOneWins);
             return playerOneWins;
+        }
+
+        private bool IsTouching(in int x, in int y)
+        {
+            return false;
         }
 
         public void ApplyEvents()
@@ -83,6 +130,11 @@ namespace HaveFun
         public void Apply(GameStarted e)
         {
             _gameStarted = true;
+        }
+
+        public void Apply(PlayerOneMoved e)
+        {
+            _board[e.X, e.Y] = 1;
         }
     }
 
