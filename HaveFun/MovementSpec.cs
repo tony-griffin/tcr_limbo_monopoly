@@ -8,19 +8,26 @@ namespace HaveFun
         [Fact]
         public void Test1()
         {
-            bool player1Wins;
             var game = new Game();
-            player1Wins = game.Handle(new StartGame());
-            Assert.Equal(true, player1Wins);
+            var player1Wins = game.Handle(new StartGame());
+            Assert.Equal(typeof(PlayerOneWins), player1Wins.GetType());
         }
     }
 
     public class Game
     {
-        public bool Handle(StartGame startGame)
+        public Event Handle(StartGame startGame)
         {
-            return true;
+            return new PlayerOneWins();
         }
+    }
+
+    public class PlayerOneWins : Event
+    {
+    }
+
+    public class Event
+    {
     }
 
     public class StartGame
