@@ -108,7 +108,7 @@ namespace HaveFun
                 _playerOneScore = _playerOneScore++;
             }
 
-            if (_playerOneScore < 3)
+            if (_playerOneScore < 2)
             {
                 return new PlayerOneMoved(cmd.X, cmd.Y);
             }
@@ -130,9 +130,9 @@ namespace HaveFun
             if (highx > 2) highx = 2;
             if (highY > 2) highY = 2;
 
-            for (int i = lowx; i < highx; i++)
+            for (int i = lowx; i <= highx; i++)
             {
-                for (int j = lowy; j < highY; j++)
+                for (int j = lowy; j <= highY; j++)
                 {
                     if (i == x && j == y) continue;
 
